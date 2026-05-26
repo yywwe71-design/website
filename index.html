@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>희망지대 - 당신을 위한 따뜻한 아지트</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+    
+    <style>
+        :root {
+            --bg-warm: #FDFBF7;
+            --bg-card: #FFFFFF;
+            --primary: #2E4857;
+            --primary-light: #EBF1F5;
+            --point-orange: #E2795B;
+            --point-orange-hover: #D16648;
+            --point-light: #FDF2EE;
+            --safe-green: #4CAF50;
+            --safe-bg: #E8F5E9;
+            --text-main: #1E293B;
+            --text-sub: #64748B;
+            --border: #E2E8F0;
+        }
+
+        /* 기본 세팅 */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Pretendard', sans-serif;
+            background-color: var(--bg-warm);
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
+
+        /* 1. 상단 안심 배너 */
+        .safe-banner {
+            background-color: #FFF9E6;
+            border-bottom: 1px solid #FFEBAA;
+            color: #B76E00;
+            padding: 10px;
+            text-align: center;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        /* 2. 네비게이션 헤더 */
+        header {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-bottom: 1px solid var(--border);
+            padding: 14px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo { display: flex; align-items: center; gap: 8px; font-size: 18px; font-weight: 800; cursor: pointer; text-decoration: none; color: var(--text-main); }
+        .logo i { color: var(--point-orange); }
+        .menu-btn { font-size: 20px; color: var(--primary); cursor: pointer; border: none; background: none; }
+
+        /* 3. 사이드 메뉴 (더보기) */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: -280px;
+            width: 280px;
+            height: 100%;
+            background-color: white;
+            box-shadow: -4px 0 15px rgba(0,0,0,0.1);
+            z-index: 2000;
+            transition: right 0.3s ease;
+            padding: 30px 20px;
+        }
+        .sidebar.active { right: 0; }
+        .sidebar-close { position: absolute; top: 20px; left: 20px; font-size: 20px; cursor: pointer; }
+        .sidebar-menu { margin-top: 50px; list-style: none; }
+        .sidebar-menu li { padding: 15px 0; border-bottom: 1px solid var(--border); font-size: 16px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 12px; }
+        .sidebar-menu li i { color: var(--point-orange); width: 20px; text-align: center; }
+        .sidebar-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 1500; display: none; }
+        .sidebar-overlay.active { display: block; }
+
+        /* 4. 공통 컨테이너 */
+        .page-content { display: none; width: 100%; max-width: 768px; margin: 0 auto; padding: 16px; min-height: calc(100vh - 120px); }
+        .page-content.active { display: block; }
+
+        /* [HOME PAGE] */
+        .home-hero { text-align: center; padding: 35px 20px; background: linear-gradient(135deg, #FDF2EE 0%, #FFF9E6 100%); border-radius: 24px; margin-bottom: 24px; border: 1px solid #FCDCD1; }
+        .home-hero h1 { font-size: 22px; font-weight: 800; margin-bottom: 10px; }
+        .home-hero p { font-size: 14px; color: var(--text-sub); }
+        
+        .home-nav-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 10px; }
+        .nav-card { background: white; border: 1px solid var(--border); border-radius: 18px; padding: 24px 15px; text-align: center; cursor: pointer; transition: transform 0.2s; }
+        .nav-card:active { transform: scale(0.95); }
+        .nav-card i { font-size: 28px; color: var(--point-orange); margin-bottom: 10px; display: block; }
+        .nav-card span { font-weight: 800; font-size: 15px; }
+
+        /* [MAP PAGE & COMMUNITY PAGE] */
+        .section-title { font-size: 18px; font-weight: 800; margin: 10px 0 16px 0; display: flex; align-items: center; gap: 8px; }
+        .region-select { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 15px; scrollbar-width: none; }
+        .btn-region { background: white; border: 1px solid var(--border); padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+        .btn-region.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+        .map-frame { width: 100%; height: 250px; border-radius: 14px; border: 1px solid var(--border); margin-bottom: 16px; }
+
+        .shelter-card { background: white; border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin-bottom: 12px; }
+        .vacancy { background: var(--point-light); border-radius: 8px; padding: 6px 10px; text-align: center; min-width: 75px; }
+        .btn-call { background: var(--primary); color: white; text-decoration: none; padding: 6px 12px; border-radius: 6px; font-weight: 700; font-size: 12px; }
+
+        .write-box { background: white; border: 1px solid var(--border); border-radius: 14px; padding: 14px; margin-bottom: 16px; }
+        .textarea-box { width: 100%; height: 70px; padding: 10px; border: 1px solid var(--border); border-radius: 8px; resize: none; font-size: 13px; margin-bottom: 8px; }
+        .btn-post { background: var(--point-orange); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 700; width: 100%; cursor: pointer; }
+
+        .post { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 10px; }
+        .post-top { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-sub); margin-bottom: 6px; }
+        .post-actions { display: flex; gap: 14px; margin-top: 10px; font-size: 12px; }
+        .comment-area { background: #F8FAFC; padding: 10px; border-radius: 8px; margin-top: 10px; display: none; }
+        .comment-area.active { display: block; }
+
+        footer { text-align: center; padding: 30px; font-size: 11px; color: var(--text-sub); border-top: 1px solid var(--border); margin-top: 40px; }
+    </style>
+</head>
+<body>
+
+    <div class="safe-banner">
+        <i class="fa-solid fa-shield-halved"></i> 위치 정보는 저장되지 않으며, 누구나 익명으로 안전하게 이용할 수 있습니다.
+    </div>
+
+    <header>
+        <div class="logo" onclick="showPage('home')">
+            <i class="fa-solid fa-house-chimney-window"></i>
+            <span>희망지대</span>
+        </div>
+        <button class="menu-btn" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+    </header>
+
+    <div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-close" onclick="toggleSidebar()"><i class="fa-solid fa-xmark"></i></div>
+        <ul class="sidebar-menu">
+            <li onclick="showPage('home'); toggleSidebar()"><i class="fa-solid fa-house"></i> 홈 화면</li>
+            <li onclick="showPage('map'); toggleSidebar()"><i class="fa-solid fa-map-location-dot"></i> 쉼터 찾기</li>
+            <li onclick="showPage('community'); toggleSidebar()"><i class="fa-solid fa-heart"></i> 이야기 광장</li>
+            <li onclick="alert('곧 업데이트 예정입니다!')"><i class="fa-solid fa-circle-info"></i> 도움말 / 상담</li>
+        </ul>
+    </div>
+
+    <div id="home" class="page-content active">
+        <div class="home-hero">
+            <div style="width: 100%; max-width: 200px; margin: 0 auto 15px auto; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+                <img src="logo.png" alt="희망지대 로고" style="width: 100%; height: auto; display: block;" onerror="this.src='https://cdn-icons-png.flaticon.com/512/616/616490.png'; this.style.opacity='0.4';">
+            </div>
+            
+            <h1>쉬어도 괜찮아, 희망지대</h1>
+            <p style="margin-top: 4px;">혼자 고민하지 마세요. 지금 당신 곁에 <br>따뜻한 아지트와 친구들이 있습니다.</p>
+        </div>
+
+        <div class="home-nav-grid">
+            <div class="nav-card" onclick="showPage('map')">
+                <i class="fa-solid fa-map-marked-alt"></i>
+                <span>쉼터 찾기</span>
+            </div>
+            <div class="nav-card" onclick="showPage('community')">
+                <i class="fa-solid fa-comments"></i>
+                <span>이야기 광장</span>
+            </div>
+        </div>
+
+        <div style="margin-top: 20px; padding: 20px; background: white; border: 1px solid var(--border); border-radius: 18px;">
+            <h3 style="font-size: 15px; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+                <i class="fa-solid fa-phone-volume" style="color:var(--point-orange)"></i> 긴급 상담이 필요한가요?
+            </h3>
+            <p style="font-size: 13px; color: var(--text-sub); margin-bottom: 15px; line-height: 1.4;">
+                망설이지 말고 언제든 노크해주세요. 버튼을 누르면 24시간 청소년 긴급 상담전화로 바로 연결됩니다.
+            </p>
+            <a href="tel:1388" style="display: block; background: var(--primary); color: white; text-align: center; padding: 12px; border-radius: 10px; text-decoration: none; font-weight: 700;">
+                <i class="fa-solid fa-phone"></i> 전화 걸기 (국번없이 1388)
+            </a>
+        </div>
+    </div>
+
+    <div id="map" class="page-content">
+        <h2 class="section-title"><i class="fa-solid fa-map-location-dot"></i> 내 주변 쉼터 찾기</h2>
+        
+        <div class="region-select">
+            <button class="btn-region active" onclick="changeRegion('seoul', this)">서울</button>
+            <button class="btn-region" onclick="changeRegion('gyeonggi', this)">경기/인천</button>
+            <button class="btn-region" onclick="changeRegion('busan', this)">부산/경남</button>
+            <button class="btn-region" onclick="changeRegion('daejeon', this)">충청/대전</button>
+        </div>
+
+        <iframe id="region-map" class="map-frame" src="https://maps.google.com/maps?q=%EC%84%9C%EC%9A%B8%20%EC%B2%AD%EC%86%8C%EB%85%84%EC%89%BC%ED%84%B0&t=&z=13&ie=UTF-8&iwloc=&output=embed"></iframe>
+
+        <div id="shelter-list"></div>
+    </div>
+
+    <div id="community" class="page-content">
+        <h2 class="section-title"><i class="fa-solid fa-heart" style="color:#E11D48"></i> 토닥토닥 이야기 광장</h2>
+        
+        <div class="write-box">
+            <textarea id="post-input" class="textarea-box" placeholder="지나온 소감이나 응원 한마디를 남겨주세요. (익명 보장)"></textarea>
+            <button class="btn-post" onclick="addPost()">소중한 글 등록하기</button>
+        </div>
+
+        <div id="post-list"></div>
+    </div>
+
+    <footer>
+        <p>대학생 운영진 및 전국 청소년쉼터·상담센터가 함께 협력하여 모니터링하고 있습니다.</p>
+        <p style="color: #CBD5E1; margin-top: 6px;">© 희망지대 프로젝트. 당신의 모든 내일을 응원합니다.</p>
+    </footer>
+
+    <script>
+        function showPage(pageId) {
+            document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            window.scrollTo(0,0);
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('active');
+            document.getElementById('overlay').classList.toggle('active');
+        }
+
+        const shelterData = {
+            seoul: [
+                { name: "서울시 푸른나무 일시쉼터", phone: "02-123-4567", vacancy: "4석", info: "24시간/연락안함/식사가능" },
+                { name: "서울 시립 일시쉼터", phone: "02-987-6543", vacancy: "2석", info: "역 도보 3분/익명보장/샤워가능" }
+            ],
+            gyeonggi: [
+                { name: "수원 청소년 단기쉼터", phone: "031-111-2222", vacancy: "6석", info: "집중상담가능/의료지원/무료급식" }
+            ],
+            busan: [
+                { name: "부산 일시쉼터 (희망드림)", phone: "051-555-4444", vacancy: "3석", info: "와이파이빵빵/세탁가능/야간상시대기" }
+            ],
+            daejeon: [
+                { name: "대전 광역 청소년쉼터", phone: "042-777-8888", vacancy: "1석", info: "남녀공간분리/초고속충전/친절함" }
+            ]
+        };
+
+        function changeRegion(region, btn) {
+            document.querySelectorAll('.btn-region').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            const mapQuery = { seoul: "서울", gyeonggi: "경기도", busan: "부산", daejeon: "대전" };
+            document.getElementById('region-map').src = `https://maps.google.com/maps?q=${mapQuery[region]}%20%EC%B2%AD%EC%86%8C%EB%85%84%EC%89%BC%ED%84%B0&t=&z=12&ie=UTF-8&iwloc=&output=embed`;
+
+            const list = document.getElementById('shelter-list');
+            list.innerHTML = "";
+            shelterData[region].forEach(s => {
+                list.innerHTML += `
+                    <div class="shelter-card">
+                        <div style="display:flex; justify-content:space-between;">
+                            <div>
+                                <h3 style="font-size:15px; margin-bottom:4px;">${s.name}</h3>
+                                <p style="font-size:11px; color:var(--text-sub);">${s.info}</p>
+                            </div>
+                            <div class="vacancy">
+                                <span style="font-size:9px; color:var(--point-orange); display:block;">남은자리</span>
+                                <span style="font-size:14px; font-weight:800;">${s.vacancy}</span>
+                            </div>
+                        </div>
+                        <div style="margin-top:12px; display:flex; justify-content:space-between; align-items:center;">
+                            <span style="font-size:10px; color:#C62828; font-weight:700;">* 부모님께 비밀 보장</span>
+                            <a href="tel:${s.phone}" class="btn-call"><i class="fa-solid fa-phone"></i> 전화하기</a>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        let posts = [
+            { id: 1, user: "익명 클로버", text: "방금 서울 푸른나무 쉼터 왔는데 밥 너무 맛있어요.. 걱정 말고 오세요 다들!", likes: 5, comments: [] }
+        ];
+
+        function renderPosts() {
+            const list = document.getElementById('post-list');
+            list.innerHTML = "";
+            posts.forEach(p => {
+                let commentsHtml = p.comments.map(c => `<div style="font-size:12px; border-bottom:1px solid #eee; padding:5px 0; color:var(--text-main)">↳ <b>익명토닥:</b> ${c}</div>`).join("");
+                
+                list.innerHTML += `
+                    <div class="post">
+                        <div class="post-top"><span>${p.user}</span> <button onclick="deletePost(${p.id})" style="border:none; background:none; color:#ccc; cursor:pointer;">삭제</button></div>
+                        <p class="post-text">${p.text}</p>
+                        <div class="post-actions">
+                            <button onclick="likePost(${p.id})" style="border:none; background:none; cursor:pointer; font-size:12px; color:var(--text-sub);"><i class="fa-solid fa-heart" style="color:#E11D48"></i> 위로 ${p.likes}</button>
+                            <button onclick="toggleComment(${p.id})" style="border:none; background:none; cursor:pointer; font-size:12px; color:var(--text-sub);"><i class="fa-regular fa-comment"></i> 답글 ${p.comments.length}</button>
+                        </div>
+                        <div class="comment-area" id="comm-${p.id}">
+                            <div id="comm-list-${p.id}">${commentsHtml}</div>
+                            <div style="display:flex; gap:5px; margin-top:10px;">
+                                <input type="text" id="comm-in-${p.id}" style="flex:1; border:1px solid #ddd; border-radius:4px; padding:5px; font-size:12px;" placeholder="답글 달기">
+                                <button onclick="addComment(${p.id})" style="background:var(--primary); color:white; border:none; padding:5px 10px; border-radius:4px; font-size:11px; cursor:pointer;">등록</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function addPost() {
+            const input = document.getElementById('post-input');
+            if(!input.value.trim()) return;
+            posts.unshift({ id: Date.now(), user: "익명 클로버", text: input.value, likes: 0, comments: [] });
+            input.value = "";
+            renderPosts();
+        }
+
+        function deletePost(id) {
+            if(confirm("글을 삭제할까요?")) {
+                posts = posts.filter(p => p.id !== id);
+                renderPosts();
+            }
+        }
+
+        function likePost(id) {
+            const post = posts.find(p => p.id === id);
+            post.likes++;
+            renderPosts();
+        }
+
+        function toggleComment(id) {
+            const el = document.getElementById(`comm-${id}`);
+            el.classList.toggle('active');
+        }
+
+        function addComment(id) {
+            const input = document.getElementById(`comm-in-${id}`);
+            if(!input.value.trim()) return;
+            const post = posts.find(p => p.id === id);
+            post.comments.push(input.value);
+            input.value = "";
+            renderPosts();
+            document.getElementById(`comm-${id}`).classList.add('active');
+        }
+
+        window.onload = () => {
+            changeRegion('seoul', document.querySelector('.btn-region'));
+            renderPosts();
+        };
+    </script>
+</body>
+</html>
